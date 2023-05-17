@@ -9,7 +9,7 @@
 @section('content')
 <p>Ejemplo</p>
 <div class="d-flex justify-content-end mb-2">
-    <x-adminlte-button label="Nuevo" data-toggle="modal" id="nuevo" data-target="#modalCustom" class="bg-green" />
+    <x-adminlte-button label="Nuevo" data-toggle="modal" id="nuevo" data-target="#modalCustom" class="bg-green" title="Agregar un ejemplo nuevo" />
 </div>
 
 <div class="card-body" id="show_all_ejemplos">
@@ -107,115 +107,131 @@
         integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
     </script>
-        <script src="js/plugins/sweetalert/sweetalert2.js" charset="UTF-8"></script>
-        <script src="js/plugins/jquery-validation/jquery.validate.min.js"></script>
-        <script src="js/plugins/jquery-validation/additional-methods.js"></script>
+    <script src="js/plugins/sweetalert/sweetalert2.js" charset="UTF-8"></script>
+    <script src="js/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="js/plugins/jquery-validation/additional-methods.js"></script>
     
     <script>
-    $(document).ready(function () {
-    $("#registro-ejemplo").validate({
-        ignore: [],
-        errorClass: "border-danger text-danger",
-        errorElement: "x-adminlte-input",
-        errorPlacement: function (error, e) {
-            jQuery(e).parents(".form-group").append(error);
-        },
-        rules: {
-            Nombre: {
-                required: true,
-                minlength: 5,
-            },
-            Descripcion: {
-                required: true,
-            },
-        },
-        messages: {
-            Nombre: {
-                required: "Por favor ingresa el nombre",
-                minlength: "El nombre debe ser de no menos de 5 caracteres",
-            },
-            Descripcion: "Por favor ingresa una descripción",
-        },
-        submitHandler: function (form) { 
-            let Nombre = $("#Nombre").val();
-            let Descripcion = $("#Descripcion").val();
-            let _token = $("input[name=_token]").val();
-            $.ajax({
-                url: "{{route('ejemplo.store')}}",
-                type: "POST",
-                data: {
-                    Nombre: Nombre,
-                    Descripcion: Descripcion,
-                    _token: _token,
+        $(document).ready(function () {
+            $("#registro-ejemplo").validate({
+                ignore: [],
+                errorClass: "border-danger text-danger",
+                errorElement: "x-adminlte-input",
+                errorPlacement: function (error, e) {
+                    jQuery(e).parents(".form-group").append(error);
                 },
-                beforeSend: function () {
-                    $("#btnAgregar").html(
-                        '<i class="fa fa-spin fa-spinner"></i> Guardando...'
-                    );
+                rules: {
+                    Nombre: {
+                        required: true,
+                        minlength: 5,
+                    },
+                    Descripcion: {
+                        required: true,
+                    },
                 },
-                success: function (response) {
-                    if (response) {
-                        $("#modalCustom").modal("hide");
-                        $("#registro-ejemplo")[0].reset();
-                        if(response.status == 200){
-                            show_swal(
-                            "Registro exitoso de ejemplo",
-                            "El ejemplo se realizo de porfa correcta",
-                            "success"
-                        );
-                        }
-                        toastr.success(
-                            "Ejemplo registrado exitosamente",
-                            "Nuevo ejemplo",
-                            {
-                                timeOut: 5000,
+                messages: {
+                    Nombre: {
+                        required: "Por favor ingresa el nombre",
+                        minlength: "El nombre debe ser de no menos de 5 caracteres",
+                    },
+                    Descripcion: "Por favor ingresa una descripción",
+                },
+                submitHandler: function (form) { 
+                    let Nombre = $("#Nombre").val();
+                    let Descripcion = $("#Descripcion").val();
+                    let _token = $("input[name=_token]").val();
+                    $.ajax({
+                        url: "{{route('ejemplo.store')}}",
+                        type: "POST",
+                        data: {
+                            Nombre: Nombre,
+                            Descripcion: Descripcion,
+                            _token: _token,
+                        },
+                        beforeSend: function () {
+                            $("#btnAgregar").html(
+                                '<i class="fa fa-spin fa-spinner"></i> Guardando...'
+                            );
+                        },
+                        success: function (response) {
+                            if (response) {
+                                $("#modalCustom").modal("hide");
+                                $("#registro-ejemplo")[0].reset();
+                                if(response.status == 200){
+                                    show_swal(
+                                    "Registro exitoso de ejemplo",
+                                    "El ejemplo se realizo de porfa correcta",
+                                    "success"
+                                );
+                                }
+                                toastr.success(
+                                    "Ejemplo registrado exitosamente",
+                                    "Nuevo ejemplo",
+                                    {
+                                        timeOut: 5000,
+                                    }
+                                );
+                                fetchEjemplos();
                             }
-                        );
-                        fetchEjemplos();
-                    }
-                    cambiarBotones();
-                },
-                error: function (data) {
-                    show_swal(
-                        "No se pudo realizar el registro",
-                        `Error: ${data.responseJSON.message}`,
-                        "error"
-                    );
-                    toastr.error(
-                        "No se pudo registrar el ejemplo",
-                        "Error de registro",
-                        {
-                            timeOut: 5000,
-                        }
-                    );
-                    cambiarBotones();
+                            cambiarBotones();
+                        },
+                        error: function (data) {
+                            show_swal(
+                                "No se pudo realizar el registro",
+                                `Estatus: ${data.statusText} <br> Causa: ${data.responseJSON.message}`,
+                                "error"
+                            );
+                            toastr.error(
+                                "No se pudo registrar el ejemplo",
+                                "Error de registro",
+                                {
+                                    timeOut: 5000,
+                                }
+                            );
+                            cambiarBotones();
+                        },
+                    });
                 },
             });
-        },
-    });
-});
+        });
 
-fetchEjemplos();
-function fetchEjemplos(){
-    $.ajax({
-        url: "{{route('ejemplo.fetch')}}",
-        type: "get",
-        success: function (response) {
-            $("#show_all_ejemplos").html(response);
-            $("table").DataTable({
-                "language": {
-                    "emptyTable": "No exite nungún registro"
-                },
-                order: [0, 'desc']
+        fetchEjemplos();
+        function fetchEjemplos(){
+            $.ajax({
+                url: "{{route('ejemplo.fetch')}}",
+                type: "get",
+                success: function (response) {
+                    $("#show_all_ejemplos").html(response);
+                    $("table").DataTable({
+                        language: {
+                            "decimal": "",
+                            "emptyTable": "No hay ningún registro",
+                            "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                            "infoEmpty": "Mostrando 0 to 0 of 0 Registros",
+                            "infoFiltered": "(Filtrado de _MAX_ total resgitros)",
+                            "infoPostFix": "",
+                            "thousands": ",",
+                            "lengthMenu": "Mostrar _MENU_ Entradas",
+                            "loadingRecords": "Cargando...",
+                            "processing": "Procesando...",
+                            "search": "Buscar:",
+                            "zeroRecords": "Sin resultados encontrados",
+                            "paginate": {
+                                "first": "Primero",
+                                "last": "Ultimo",
+                                "next": "Siguiente",
+                                "previous": "Anterior"
+                            }
+                        },
+                        order: [0, 'desc']
+                    });
+                }
             });
         }
-    });
-}
 
-$(document).on("click", ".editIcon", function (e) {
-    e.preventDefault();
-    let id = $(this).attr('id');
-    console.log(id);
+        $(document).on("click", ".editIcon", function (e) {
+            e.preventDefault();
+            let id = $(this).attr('id');
             $.ajax({
                 url: "{{route('ejemplo.show')}}",
                 type: "GET",
@@ -225,7 +241,6 @@ $(document).on("click", ".editIcon", function (e) {
                 },
                 success: function (response) {
                     if (response) {
-                        console.log(response)
                         $("#Id2").val(response.Id_Ejemplo);
                         $("#Nombre2").val(response.Nombre);
                         $("#Descripcion2").val(response.Descripcion);
@@ -234,7 +249,7 @@ $(document).on("click", ".editIcon", function (e) {
                 error: function (data) {
                     show_swal(
                         "No se pudo acceder al registro",
-                        `Error: ${data.responseJSON.message}`,
+                        `Estatus: ${data.statusText} <br> Causa: ${data.responseJSON.message}`,
                         "error"
                     );
                     toastr.error(
@@ -247,100 +262,120 @@ $(document).on("click", ".editIcon", function (e) {
                     cambiarBotones();
                 },
             });
-});
+        });
 
 
-$(document).ready(function () {
-    $("#actualizacion-ejemplo").validate({
-        ignore: [],
-        errorClass: "border-danger text-danger",
-        errorElement: "x-adminlte-input",
-        errorPlacement: function (error, e) {
-            jQuery(e).parents(".form-group").append(error);
-        },
-        rules: {
-            Nombre2: {
-                required: true,
-                minlength: 5,
-            },
-            Descripcion2: {
-                required: true,
-            },
-        },
-        messages: {
-            Nombre2: {
-                required: "Por favor ingresa el nombre",
-                minlength: "El nombre debe ser de no menos de 5 caracteres",
-            },
-            Descripcion2: "Por favor ingresa una descripción",
-        },
-        submitHandler: function (form) { 
-            let Id_Ejemplo = $("#Id2").val();
-            let Nombre = $("#Nombre2").val();
-            let Descripcion = $("#Descripcion2").val();
-            let _token = $("input[name=_token]").val();
-            $.ajax({
-                url: "{{route('ejemplo.update')}}",
-                type: "POST",
-                data: {
-                    Id_Ejemplo: Id_Ejemplo,
-                    Nombre: Nombre,
-                    Descripcion: Descripcion,
-                    _token: _token,
+        $(document).ready(function () {
+            $("#actualizacion-ejemplo").validate({
+                ignore: [],
+                errorClass: "border-danger text-danger",
+                errorElement: "x-adminlte-input",
+                errorPlacement: function (error, e) {
+                    jQuery(e).parents(".form-group").append(error);
                 },
-                beforeSend: function () {
-                    $("#btnEditar").html(
-                        '<i class="fa fa-spin fa-spinner"></i> Actualizando...'
-                    );
+                rules: {
+                    Nombre2: {
+                        required: true,
+                        minlength: 5,
+                    },
+                    Descripcion2: {
+                        required: true,
+                    },
                 },
-                success: function (response) {
-                    if (response) {
-                        $("#modalEditar").modal("hide");
-                        $("#actualizacion-ejemplo")[0].reset();
-                        if(response.status == 200){
-                            show_swal(
-                                "Actualización exitosa",
-                                "El ejemplo se actualizó",
-                                "success"
-                            );
-                        }
-                        toastr.success(
-                            "Ejemplo actualizado exitosamente",
-                            "Actualización de ejemplo",
+                messages: {
+                    Nombre2: {
+                        required: "Por favor ingresa el nombre",
+                        minlength: "El nombre debe ser de no menos de 5 caracteres",
+                    },
+                    Descripcion2: "Por favor ingresa una descripción",
+                },
+                submitHandler: function (form) { 
+                    let Id_Ejemplo = $("#Id2").val();
+                    let Nombre = $("#Nombre2").val();
+                    let Descripcion = $("#Descripcion2").val();
+                    let _token = $("input[name=_token]").val();
+                    swal({
+                        title: '¿Estás seguro de realizar la actualización?',
+                        text: 'Antes de confirmar verifica que la información introducida sea correcta.',
+                        type: 'warning',
+                        showCancelButton: true,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Sí, actualizar',
+                        cancelButtonText: 'No, cancelar',
+                        cancelButtonColor: '#d50a0a'
+                    }).then(r => {
+                        $.ajax({
+                            url: "{{route('ejemplo.update')}}",
+                            type: "POST",
+                            data: {
+                                Id_Ejemplo: Id_Ejemplo,
+                                Nombre: Nombre,
+                                Descripcion: Descripcion,
+                                _token: _token,
+                            },
+                            beforeSend: function () {
+                                $("#btnEditar").html(
+                                    '<i class="fa fa-spin fa-spinner"></i> Actualizando...'
+                                );
+                            },
+                            success: function (response) {
+                                if (response) {
+                                    $("#modalEditar").modal("hide");
+                                    $("#actualizacion-ejemplo")[0].reset();
+                                    if(response.status == 200){
+                                        show_swal(
+                                            "Actualización exitosa",
+                                            "El ejemplo se actualizó",
+                                            "success"
+                                        );
+                                    }
+                                    toastr.success(
+                                        "Ejemplo actualizado exitosamente",
+                                        "Actualización de ejemplo",
+                                        {
+                                            timeOut: 5000,
+                                        }
+                                    );
+                                    fetchEjemplos();
+                                }
+                                cambiarBotones();
+                            },
+                            error: function (data) {
+                                show_swal(
+                                    "No se pudo actualizar el ejemplo",
+                                    `Estatus: ${data.statusText} <br> Causa: ${data.responseJSON.message}`,
+                                    "error"
+                                );
+                                toastr.error(
+                                    "No se pudo actualizar el ejemplo",
+                                    "Error de actualización",
+                                    {
+                                        timeOut: 5000,
+                                    }
+                                );
+                                cambiarBotones();
+                            },
+                        });
+                    }).catch(() => {
+                        toastr.error(
+                            "Actualización cancelada",
+                            "Se canceló el proceso de actualización",
                             {
                                 timeOut: 5000,
                             }
                         );
-                        fetchEjemplos();
-                    }
-                    cambiarBotones();
-                },
-                error: function (data) {
-                    show_swal(
-                        "No se pudo actualizar el ejemplo",
-                        `Error: ${data.responseJSON.message}`,
-                        "error"
-                    );
-                    toastr.error(
-                        "No se pudo actualizar el ejemplo",
-                        "Error de actualización",
-                        {
-                            timeOut: 5000,
-                        }
-                    );
-                    cambiarBotones();
+                    })
                 },
             });
-        },
-    });
-});
+        });
 
 
-$(document).on("click", ".deleteIcon", function (e) {
-    e.preventDefault();
-    let id = $(this).attr('id');
-    console.log(id);
-    swal({
+        $(document).on("click", ".deleteIcon", function (e) {
+            e.preventDefault();
+            let id = $(this).attr('id');
+            swal({
                 title: '¿Estás seguro?',
                 text: 'Al hacer esto el ejemplo será eliminado.',
                 type: 'warning',
@@ -360,18 +395,25 @@ $(document).on("click", ".deleteIcon", function (e) {
                             _token: '{{ csrf_token() }}',
                         },
                         success: function (response) {
-                            console.log(response.status);
                             show_swal(
                                 "Ejemplo eliminado",
                                 "El ejemplo se eliminó de correcta",
                                 "success"
-                            )
+                            );
+                            toastr.success(
+                                "Eliminación exitosa",
+                                "El ejemplo fue eliminado",
+                                {
+                                    timeOut: 5000,
+                                }
+                            );
                             fetchEjemplos();
                         },
                         error: function (data) {
+                            console.log(data);
                             show_swal(
                                 "No se pudo eliminar el registro",
-                                `Error: ${data.responseJSON.message}`,
+                                `Estatus: ${data.statusText} <br> Causa: ${data.responseJSON.message}`,
                                 "error"
                             );
                             toastr.error(
@@ -385,13 +427,20 @@ $(document).on("click", ".deleteIcon", function (e) {
                         },
                     });
             }).catch(() => {
-                show_swal("Eliminación cancelada", "El proceso de eliminación fue cancelado", "warning")
-            })
-});
+                show_swal("Eliminación cancelada", "El proceso de eliminación fue cancelado", "warning");
+                toastr.error(
+                    "Eliminación cancelada",
+                    "Se canceló el proceso de eliminación",
+                    {
+                        timeOut: 5000,
+                    }
+                );
+            });
+        });
 
-$(document).on("click", ".showIcon", function () {
-    let id = $(this).attr('id');
-    $.ajax({
+        $(document).on("click", ".showIcon", function () {
+            let id = $(this).attr('id');
+            $.ajax({
                 url: "{{route('ejemplo.show')}}",
                 type: "GET",
                 data: {
@@ -400,7 +449,6 @@ $(document).on("click", ".showIcon", function () {
                 },
                 success: function (response) {
                     if (response) {
-                        console.log(response)
                         $("#Id3").val(response.Id_Ejemplo);
                         $("#Nombre3").val(response.Nombre);
                         $("#Descripcion3").val(response.Descripcion);
@@ -409,7 +457,7 @@ $(document).on("click", ".showIcon", function () {
                 error: function (data) {
                     show_swal(
                         "No se pudo acceder al registro",
-                        `Error: ${data.responseJSON.message}`,
+                        `Estatus: ${data.statusText} <br> Causa: ${data.responseJSON.message}`,
                         "error"
                     );
                     toastr.error(
@@ -422,26 +470,23 @@ $(document).on("click", ".showIcon", function () {
                     cambiarBotones();
                 },
             });
-})
+        });
 
-function show_swal(titulo, mensaje, tipo) {
-    swal({
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        title: titulo,
-        html: mensaje,
-        type: tipo,
-    });
-}
+        function show_swal(titulo, mensaje, tipo) {
+            swal({
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                title: titulo,
+                html: mensaje,
+                type: tipo,
+            });
+        };
 
-function cambiarBotones() {
-    $("#btnAgregar").text("Guardar");
-    $("#btnAgregar").removeClass("btn-warning");
-    $("#btnEditar").text("Actualizar");
-    $("#btnEditar").removeClass("btn-warning");
-}
-
-
+        function cambiarBotones() {
+            $("#btnAgregar").text("Guardar");
+            $("#btnAgregar").removeClass("btn-warning");
+            $("#btnEditar").text("Actualizar");
+            $("#btnEditar").removeClass("btn-warning");
+        }
     </script>
-
 @stop

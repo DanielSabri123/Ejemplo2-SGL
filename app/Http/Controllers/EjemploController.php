@@ -35,13 +35,13 @@ class EjemploController extends Controller
                             <tbody>";
                             foreach($ejemplos as $e){
                                 $respuesta .= "<tr>
-                                    <td class='m-0 py-0'>$e->Id_Ejemplo</td>
-                                    <td class='m-0 py-0'>$e->Nombre</td>
-                                    <td class='m-0 py-0'>$e->Descripcion</td>
-                                    <td class='m-0 py-0'>
-                                        <a href='#' id=".$e->Id_Ejemplo." class='btn btn-warning text-white m-1 showIcon' data-toggle='modal' data-target='#modalVer'>Ver<a/>
-                                        <a href='#' id=".$e->Id_Ejemplo." class='btn btn-success m-1 editIcon' data-toggle='modal' data-target='#modalEditar'>Editar<a/>
-                                        <a href='#' id=".$e->Id_Ejemplo." class='btn btn-danger m-1 deleteIcon'>Eliminar<a/>
+                                    <td class='m-0 py-2'>$e->Id_Ejemplo</td>
+                                    <td class='m-0 py-2'>$e->Nombre</td>
+                                    <td class='m-0 py-2'>$e->Descripcion</td>
+                                    <td class='m-0 py-0 text-center'>
+                                        <a href='#' id=".$e->Id_Ejemplo." title='Detalles de ".$e->Nombre."' class='btn btn-warning text-white m-1 showIcon' data-toggle='modal' data-target='#modalVer'>Ver<a/>
+                                        <a href='#' id=".$e->Id_Ejemplo." title='Modificar a ".$e->Nombre."' class='btn btn-success m-1 editIcon' data-toggle='modal' data-target='#modalEditar'>Editar<a/>
+                                        <a href='#' id=".$e->Id_Ejemplo." title='Eliminar a ".$e->Nombre."' class='btn btn-danger m-1 deleteIcon'>Eliminar<a/>
                                     </td>
                                 </tr>"; 
                             }
@@ -59,7 +59,7 @@ class EjemploController extends Controller
                     <td width='30%'>Acciones</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class='py-5'>
             </tbody>";
         }
     }

@@ -1,0 +1,12 @@
+Si se quiere instalar la plantilla se ejecutan los comandos
+
+composer require jeroennoten/laravel-adminlte
+php artisan adminlte:install
+
+La preguntas que haga la consola se le responde con un no
+
+Debido a que la plantilla cuenta con las extensiones de datatable, solo es necesario activarlas en el archivo de configuración
+
+La librería de SweetAlert esta en la carpeta de Js, esta libreria ya esta descargada y solo es necesario importarla
+
+Al igual que la libreria para validar los formularios con Js, esta descargada en la carpeta con el mismo nombre, solo falta importarle

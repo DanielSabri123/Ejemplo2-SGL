@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUpdateRequest;
 use App\Http\Requests\ShowDestroyRequest;
 use App\Models\Ejemplo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EjemploController extends Controller
 {
@@ -21,47 +22,7 @@ class EjemploController extends Controller
     public function fetch()
     {
         $ejemplos = Ejemplo::all();
-        $respuesta = "";
-        if($ejemplos->count() >0){
-            $respuesta .= "<table id='table-ejemplo' class='table table-hoverdisplay table-striped table-hover responsive no-wrap' width='100%'>
-                                <thead class='bg-dark'>
-                                    <tr>
-                                        <td width='10%'>ID</td>
-                                        <td width='30%'>Nombre</td>
-                                        <td width='30%'>Descripcion</td>
-                                        <td width='30%'>Acciones</td>
-                                    </tr>
-                                </thead>
-                            <tbody>";
-                            foreach($ejemplos as $e){
-                                $respuesta .= "<tr>
-                                    <td class='m-0 py-2'>$e->Id_Ejemplo</td>
-                                    <td class='m-0 py-2'>$e->Nombre</td>
-                                    <td class='m-0 py-2'>$e->Descripcion</td>
-                                    <td class='m-0 py-0 text-center'>
-                                        <a href='#' id=".$e->Id_Ejemplo." title='Detalles de ".$e->Nombre."' class='btn btn-warning text-white m-1 showIcon' data-toggle='modal' data-target='#modalVer'>Ver<a/>
-                                        <a href='#' id=".$e->Id_Ejemplo." title='Modificar a ".$e->Nombre."' class='btn btn-success m-1 editIcon' data-toggle='modal' data-target='#modalEditar'>Editar<a/>
-                                        <a href='#' id=".$e->Id_Ejemplo." title='Eliminar a ".$e->Nombre."' class='btn btn-danger m-1 deleteIcon'>Eliminar<a/>
-                                    </td>
-                                </tr>"; 
-                            }
-                        $respuesta.="<tbody>
-                        </table>";
-                        echo $respuesta;
-                        
-        }else{
-            echo "<table id='table-ejemplo' class='table table-hoverdisplay table-striped table-hover responsive no-wrap' width='100%'>
-            <thead class='bg-dark'>
-                <tr>
-                    <td width='10%'>ID</td>
-                    <td width='30%'>Nombre</td>
-                    <td width='30%'>Descripcion</td>
-                    <td width='30%'>Acciones</td>
-                </tr>
-            </thead>
-            <tbody class='py-5'>
-            </tbody>";
-        }
+        return response()->json($ejemplos);
     }
 
     /**
@@ -120,7 +81,12 @@ class EjemploController extends Controller
      */
     public function destroy(ShowDestroyRequest $request)
     {
-        DB::update('EXEC SP_DS_Delete_Ejemplo ?', [$request->Id_Ejemplo]);
+        $tamano = count($request->Id_Ejemplo);
+
+        for($x = 0; $x < $tamano; $x++){
+            DB::update('EXEC SP_Ejemplos_Eliminar ?', [$request->Id_Ejemplo[$x]]);
+        }
+
         return response()->json([
             "status" => 200
         ]);

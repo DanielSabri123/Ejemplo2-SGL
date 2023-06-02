@@ -317,6 +317,12 @@ return [
             'icon'        => 'far fa-fw fa-file',
             'label'       => 4,
             'label_color' => 'success',
+        ],[
+            'text'        => 'Ejemplo2',
+            'url'         => 'ejemplo2',
+            'icon'        => 'far fa-fw fa-file',
+            'label'       => 4,
+            'label_color' => 'success',
         ],
         
         [
